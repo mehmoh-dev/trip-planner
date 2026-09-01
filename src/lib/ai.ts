@@ -81,8 +81,9 @@ async function callGemini(
     prefs.budget ? `Budget: about ${prefs.budget} ${currency} per person.` : '',
     prefs.interests ? `Interests: ${prefs.interests}.` : '',
     prefs.pace ? `Preferred pace: ${prefs.pace}.` : '',
-    `Estimate a realistic total price PER PERSON in ${currency} covering typical accommodation, activities and local transport (exclude international flights).`,
-    `Return concise, practical activities. Include 3-6 booking suggestions (hotels, tours, transport, passes).`,
+    `Base your recommendations on where travelers most commonly and happily go: prioritize the popular, well-reviewed places people search for and love, favor good value and lower cost options, and keep the days comfortable and realistic (avoid over-packing the schedule).`,
+    `Estimate a realistic total price PER PERSON in ${currency} covering typical accommodation, activities and local transport (exclude international flights). Aim for a cost-effective but comfortable trip.`,
+    `Return concise, practical activities. Include 3-6 booking suggestions (hotels, tours, transport, passes) that are popular and good value.`,
   ]
     .filter(Boolean)
     .join(' ');

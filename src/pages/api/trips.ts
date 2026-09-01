@@ -15,9 +15,10 @@ import {
 export const prerender = false;
 
 /** Public: list all trips (used by the planner UI and admin). */
-export const GET: APIRoute = async () => {
+export const GET: APIRoute = async ({ url }) => {
+  const sort = url.searchParams.get('sort') === 'popular' ? 'popular' : 'recent';
   try {
-    const trips = await listTrips();
+    const trips = await listTrips(sort);
     return json({ ok: true, trips });
   } catch (err) {
     if (err instanceof DbNotConfiguredError) return json({ ok: true, trips: [], dbConfigured: false });

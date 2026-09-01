@@ -10,10 +10,12 @@ export const POST: APIRoute = async ({ cookies }) => {
   if (!isAuthenticated(cookies)) return unauthorized('Admin login required.');
   try {
     const result = await seedSampleData();
+    const parts: string[] = [];
+    if (result.trips) parts.push(`${result.trips} trips`);
+    if (result.views) parts.push(`${result.views} recent views`);
+    if (result.testimonials) parts.push(`${result.testimonials} reviews`);
     return ok({
-      message: result.seeded
-        ? `Added ${result.trips} sample trips and ${result.views} recent views.`
-        : 'Sample data was skipped because trips already exist.',
+      message: parts.length ? `Added ${parts.join(', ')}.` : 'Sample data already present — nothing to add.',
       ...result,
     });
   } catch (err) {

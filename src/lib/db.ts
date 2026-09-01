@@ -23,6 +23,7 @@ export type Trip = {
   itinerary: unknown; // JSON: array of { day, title, activities[] }
   booking_suggestions: unknown; // JSON: array of strings
   created_at: string;
+  views?: number; // populated by listTrips (popularity)
 };
 
 export type Subscriber = {
@@ -37,6 +38,20 @@ export type TripView = {
   title: string;
   destination: string;
   viewed_at: string;
+  // Enriched from the linked trip (null for ad-hoc destination views).
+  price: number | null;
+  currency: string | null;
+  days: number | null;
+  start_date: string | null;
+  end_date: string | null;
+};
+
+export type Testimonial = {
+  id: number;
+  name: string;
+  detail: string;
+  quote: string;
+  created_at: string;
 };
 
 let _sql: NeonQueryFunction<false, false> | null = null;
@@ -116,6 +131,16 @@ export async function ensureSchema(): Promise<void> {
     )
   `;
 
+  await sql`
+    CREATE TABLE IF NOT EXISTS testimonials (
+      id SERIAL PRIMARY KEY,
+      name TEXT NOT NULL,
+      detail TEXT NOT NULL DEFAULT '',
+      quote TEXT NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    )
+  `;
+
   _schemaReady = true;
 }
 
@@ -191,10 +216,29 @@ export async function createTrip(trip: NewTrip): Promise<Trip> {
   return rows[0];
 }
 
-export async function listTrips(): Promise<Trip[]> {
+export async function listTrips(sort: 'recent' | 'popular' = 'recent'): Promise<Trip[]> {
   await ensureSchema();
   const sql = getSql();
-  const rows = (await sql`SELECT * FROM trips ORDER BY created_at DESC`) as Trip[];
+  const rows =
+    sort === 'popular'
+      ? ((await sql`
+          SELECT t.*, COALESCE(vc.views, 0)::int AS views
+          FROM trips t
+          LEFT JOIN (
+            SELECT lower(destination) AS k, COUNT(*)::int AS views
+            FROM trip_views GROUP BY lower(destination)
+          ) vc ON vc.k = lower(t.destination)
+          ORDER BY views DESC, t.created_at DESC
+        `) as Trip[])
+      : ((await sql`
+          SELECT t.*, COALESCE(vc.views, 0)::int AS views
+          FROM trips t
+          LEFT JOIN (
+            SELECT lower(destination) AS k, COUNT(*)::int AS views
+            FROM trip_views GROUP BY lower(destination)
+          ) vc ON vc.k = lower(t.destination)
+          ORDER BY t.created_at DESC
+        `) as Trip[]);
   return rows.map(normalizeTrip);
 }
 
@@ -233,14 +277,35 @@ export async function listRecentViews(limit = 6): Promise<TripView[]> {
   await ensureSchema();
   const sql = getSql();
   const rows = (await sql`
-    SELECT DISTINCT ON (lower(destination)) id, trip_id, title, destination, viewed_at
-    FROM trip_views
-    ORDER BY lower(destination), viewed_at DESC
-  `) as TripView[];
-  // Re-sort by recency (DISTINCT ON forces destination ordering above).
+    SELECT DISTINCT ON (lower(v.destination))
+      v.id, v.trip_id, v.title, v.destination, v.viewed_at,
+      t.price, t.currency,
+      COALESCE(jsonb_array_length(t.itinerary), 0) AS days,
+      t.start_date, t.end_date
+    FROM trip_views v
+    LEFT JOIN trips t ON t.id = v.trip_id
+    ORDER BY lower(v.destination), v.viewed_at DESC
+  `) as (TripView & { price: string | number | null })[];
   return rows
+    .map((r) => ({
+      ...r,
+      price: r.price == null ? null : typeof r.price === 'string' ? parseFloat(r.price) : r.price,
+      days: r.days == null ? null : Number(r.days),
+    }))
     .sort((a, b) => new Date(b.viewed_at).getTime() - new Date(a.viewed_at).getTime())
     .slice(0, limit);
+}
+
+// --- Testimonials -----------------------------------------------------------
+
+export async function listTestimonials(limit = 6): Promise<Testimonial[]> {
+  await ensureSchema();
+  const sql = getSql();
+  const rows = (await sql`
+    SELECT id, name, detail, quote, created_at
+    FROM testimonials ORDER BY created_at ASC LIMIT ${limit}
+  `) as Testimonial[];
+  return rows;
 }
 
 // --- Stats ------------------------------------------------------------------
@@ -267,13 +332,20 @@ export async function getStats(): Promise<Stats> {
  * trips table is empty (so it is safe to call repeatedly). Returns whether it
  * seeded and how many rows were added.
  */
-export async function seedSampleData(): Promise<{ seeded: boolean; trips: number; views: number }> {
+export async function seedSampleData(): Promise<{
+  seeded: boolean;
+  trips: number;
+  views: number;
+  testimonials: number;
+}> {
   await ensureSchema();
   const sql = getSql();
 
+  const testimonialsAdded = await seedTestimonials();
+
   const existing = (await sql`SELECT COUNT(*)::int AS count FROM trips`) as { count: number }[];
   if ((existing[0]?.count ?? 0) > 0) {
-    return { seeded: false, trips: 0, views: 0 };
+    return { seeded: testimonialsAdded > 0, trips: 0, views: 0, testimonials: testimonialsAdded };
   }
 
   const samples: NewTrip[] = [
@@ -363,5 +435,42 @@ export async function seedSampleData(): Promise<{ seeded: boolean; trips: number
     `;
   }
 
-  return { seeded: true, trips: created.length, views: seedViews.length };
+  return { seeded: true, trips: created.length, views: seedViews.length, testimonials: testimonialsAdded };
+}
+
+/** Seeds a few reviews if the testimonials table is empty. */
+async function seedTestimonials(): Promise<number> {
+  const sql = getSql();
+  const existing = (await sql`SELECT COUNT(*)::int AS count FROM testimonials`) as { count: number }[];
+  if ((existing[0]?.count ?? 0) > 0) return 0;
+
+  const rows = [
+    {
+      name: 'Amara O.',
+      detail: 'Family trip · 5 days',
+      quote:
+        'I had a full Kyoto plan before my coffee went cold. The pacing was spot on for two jet-lagged parents.',
+    },
+    {
+      name: 'Daniel R.',
+      detail: 'Amalfi Coast · couple',
+      quote: 'The price estimate landed within a few euros of what we actually spent. That never happens.',
+    },
+    {
+      name: 'Priya S.',
+      detail: 'Solo traveler',
+      quote:
+        'I subscribed on a whim and booked the Iceland trip they emailed two weeks later. No regrets.',
+    },
+    {
+      name: 'Marcus T.',
+      detail: 'Weekend break · 3 days',
+      quote:
+        'It suggested the neighborhoods locals actually recommend, not the tourist traps. Felt genuinely useful.',
+    },
+  ];
+  for (const r of rows) {
+    await sql`INSERT INTO testimonials (name, detail, quote) VALUES (${r.name}, ${r.detail}, ${r.quote})`;
+  }
+  return rows.length;
 }

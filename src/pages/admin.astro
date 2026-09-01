@@ -53,7 +53,7 @@ import Layout from '../layouts/Layout.astro';
         <!-- Publish trip -->
         <div class="card" style="margin-top:22px;">
           <h3 style="font-size:22px;margin-bottom:6px;">Publish a new trip</h3>
-          <p class="muted" style="margin-bottom:20px;">Fill it in yourself, or let AI draft the itinerary and price from a destination.</p>
+          <p class="muted" style="margin-bottom:20px;">Fill it in yourself, or auto-draft the itinerary and price from just a destination.</p>
           <form id="trip-form">
             <div class="grid grid-2">
               <div class="field"><label for="t-title">Trip title</label><input id="t-title" placeholder="Autumn in Kyoto" required /></div>
@@ -69,12 +69,12 @@ import Layout from '../layouts/Layout.astro';
               <div class="field"><label for="t-currency">Currency</label>
                 <select id="t-currency"><option>USD</option><option>EUR</option><option>GBP</option><option>PKR</option><option>INR</option><option>AED</option><option>JPY</option></select>
               </div>
-              <div class="field"><label for="t-interests">Interests (for AI)</label><input id="t-interests" placeholder="temples, food" /></div>
+              <div class="field"><label for="t-interests">Interests</label><input id="t-interests" placeholder="temples, food" /></div>
             </div>
-            <div class="field"><label for="t-summary">Summary</label><textarea id="t-summary" placeholder="Short description, or generate with AI below."></textarea></div>
+            <div class="field"><label for="t-summary">Summary</label><textarea id="t-summary" placeholder="Short description, or auto-draft it below."></textarea></div>
 
             <div class="row">
-              <button class="btn btn--teal" type="button" id="ai-btn">Generate with AI</button>
+              <button class="btn btn--teal" type="button" id="ai-btn">Auto-draft itinerary</button>
               <label class="check"><input type="checkbox" id="t-notify" checked /> Email subscribers on publish</label>
             </div>
             <div id="ai-preview" class="note info hidden"></div>
@@ -145,7 +145,7 @@ import Layout from '../layouts/Layout.astro';
     }
   }
   function renderBadges(cfg: any) {
-    const items: [string, boolean][] = [['Database', cfg.dbConfigured], ['Email', cfg.mailConfigured], ['AI', cfg.aiConfigured], ['Admin', cfg.adminConfigured]];
+    const items: [string, boolean][] = [['Database', cfg.dbConfigured], ['Email', cfg.mailConfigured], ['Recommender', cfg.aiConfigured], ['Admin', cfg.adminConfigured]];
     $('status-badges').innerHTML = items.map(([label, ready]) =>
       `<span class="badge ${ready ? 'on' : 'off'}">${ready ? '●' : '○'} ${label}</span>`).join('');
   }
@@ -165,19 +165,19 @@ import Layout from '../layouts/Layout.astro';
     const btn = $('ai-btn') as HTMLButtonElement; const preview = $('ai-preview');
     const destination = ($('t-destination') as HTMLInputElement).value.trim();
     if (!destination) { showNote(preview, 'Enter a destination first.', 'err'); return; }
-    btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Generating…';
+    btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Drafting…';
     const { ok, json } = await api('/api/itinerary', 'POST', {
       destination, startDate: ($('t-start') as HTMLInputElement).value || null, endDate: ($('t-end') as HTMLInputElement).value || null,
       travelers: ($('t-travelers') as HTMLInputElement).value, currency: ($('t-currency') as HTMLSelectElement).value, interests: ($('t-interests') as HTMLInputElement).value,
     });
-    btn.disabled = false; btn.textContent = 'Generate with AI';
-    if (!ok || !json.ok) { showNote(preview, json.error || 'Generation failed.', 'err'); return; }
+    btn.disabled = false; btn.textContent = 'Auto-draft itinerary';
+    if (!ok || !json.ok) { showNote(preview, json.error || 'Drafting failed.', 'err'); return; }
     const it = json.itinerary;
     generated = { days: it.days, bookingSuggestions: it.bookingSuggestions };
     if (!($('t-title') as HTMLInputElement).value) ($('t-title') as HTMLInputElement).value = it.title;
     if (!($('t-summary') as HTMLTextAreaElement).value) ($('t-summary') as HTMLTextAreaElement).value = it.summary;
     if (!($('t-price') as HTMLInputElement).value) ($('t-price') as HTMLInputElement).value = String(it.estimatedPrice);
-    showNote(preview, `Drafted ${it.days.length} days and ${it.bookingSuggestions.length} booking tips. Suggested price ${fmt(it.estimatedPrice, it.currency)} (${it.source === 'gemini' ? 'AI' : 'estimate'}). Edit anything, then publish.`, 'ok');
+    showNote(preview, `Drafted ${it.days.length} days and ${it.bookingSuggestions.length} booking tips. Suggested price ${fmt(it.estimatedPrice, it.currency)}. Edit anything, then publish.`, 'ok');
   });
 
   ($('trip-form') as HTMLFormElement).addEventListener('submit', async (e) => {
@@ -200,8 +200,9 @@ import Layout from '../layouts/Layout.astro';
     (e.target as HTMLFormElement).reset(); generated = null; hide($('ai-preview')); loadAdminTrips(); refreshStatus();
   });
 
+  const skelAdmin = () => `<div class="skel-card" style="padding:18px"><div class="skeleton skel-line" style="width:70%;height:16px"></div><div class="skeleton skel-line" style="width:45%"></div><div class="skeleton skel-line" style="width:35%;height:20px;margin-top:10px"></div><div class="skeleton skel-line" style="width:100%;height:38px;margin-top:14px"></div></div>`;
   async function loadAdminTrips() {
-    const list = $('admin-trips'); list.innerHTML = '<p class="muted">Loading…</p>';
+    const list = $('admin-trips'); list.innerHTML = Array.from({ length: 3 }, skelAdmin).join('');
     const { json } = await api('/api/trips');
     const trips = json.trips || [];
     if (!trips.length) { list.innerHTML = '<p class="muted">No trips yet. Use “Load sample data” to get started.</p>'; return; }
