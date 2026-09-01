@@ -1,5 +1,10 @@
-import { neon, type NeonQueryFunction } from '@neondatabase/serverless';
+import { neon, types, type NeonQueryFunction } from '@neondatabase/serverless';
 import { env } from './env';
+
+// Return Postgres DATE (OID 1082) as a plain 'YYYY-MM-DD' string instead of a
+// JS Date. This avoids timezone shifts (e.g. a stored 2026-09-05 coming back as
+// "2026-09-04T19:00:00.000Z") in trip cards, recent views and emails.
+types.setTypeParser(1082, (value: string) => value);
 
 /**
  * Neon Postgres access layer.

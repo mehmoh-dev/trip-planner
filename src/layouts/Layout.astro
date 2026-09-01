@@ -218,7 +218,9 @@ const year = new Date().getFullYear();
       .skel-line { height: 12px; border-radius: 6px; margin-bottom: 10px; }
 
       /* ---- Trip cards ---- */
-      .trip-grid { display: grid; gap: 24px; grid-template-columns: repeat(3, 1fr); }
+      /* Fluid: 3 across on desktop, 2 on tablet, 1 on mobile. A lone trailing
+         card keeps its column width instead of stretching full width. */
+      .trip-grid { display: grid; gap: 24px; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
       .trip { display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-sm); transition: transform .18s ease, box-shadow .18s ease; cursor: pointer; }
       .trip:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
       .trip__cover { height: 138px; position: relative; display: flex; flex-direction: column; justify-content: space-between; padding: 14px; color: #fff; overflow: hidden; }
@@ -293,12 +295,12 @@ const year = new Date().getFullYear();
       .footer__base { border-top: 1px solid rgba(255,255,255,.1); padding: 22px 26px; font-size: 13px; color: #7c9a9e; }
 
       @media (max-width: 900px) {
-        .steps, .features, .testimonials, .grid-3, .grid-4, .trip-grid { grid-template-columns: 1fr 1fr; }
+        .steps, .features, .testimonials, .grid-3, .grid-4 { grid-template-columns: 1fr 1fr; }
         .footer__inner { grid-template-columns: 1fr; gap: 30px; }
       }
       @media (max-width: 640px) {
         .section { padding: 52px 0; }
-        .grid-2, .grid-3, .grid-4, .steps, .features, .testimonials, .trip-grid { grid-template-columns: 1fr; }
+        .grid-2, .grid-3, .grid-4, .steps, .features, .testimonials { grid-template-columns: 1fr; }
         .nav__links a { padding: 8px 11px; font-size: 14px; }
         .brand span:last-child { display: none; }
         .card { padding: 22px; }

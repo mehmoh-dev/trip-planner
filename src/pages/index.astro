@@ -274,6 +274,17 @@ const siteName = import.meta.env.PUBLIC_SITE_NAME || 'Wander';
   const $ = (id: string) => document.getElementById(id) as HTMLElement;
   const fmt = (n: number, c: string) => { try { return new Intl.NumberFormat('en-US', { style: 'currency', currency: c, maximumFractionDigits: 0 }).format(n); } catch { return `${c} ${Math.round(n)}`; } };
   const esc = (s: unknown) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c] as string));
+  // Format a date-only value (YYYY-MM-DD or ISO) without timezone shifting.
+  const fmtDate = (d?: string | null) => {
+    if (!d) return '';
+    const [y, m, day] = String(d).slice(0, 10).split('-').map(Number);
+    if (!y || !m || !day) return '';
+    return new Date(Date.UTC(y, m - 1, day)).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
+  };
+  const fmtRange = (a?: string | null, b?: string | null) => {
+    if (!a || !b) return 'Flexible dates';
+    return `${fmtDate(a)} – ${fmtDate(b)}, ${String(b).slice(0, 4)}`;
+  };
   const showNote = (el: HTMLElement, msg: string, kind: 'ok' | 'err' | 'info' = 'info') => { el.textContent = msg; el.className = `note ${kind}`; };
   const hide = (el: HTMLElement) => el.classList.add('hidden');
 
@@ -409,7 +420,7 @@ const siteName = import.meta.env.PUBLIC_SITE_NAME || 'Wander';
   }
   function tripCard(t: any) {
     const it = Array.isArray(t.itinerary) ? t.itinerary : [];
-    const dates = t.start_date && t.end_date ? `${t.start_date} → ${t.end_date}` : 'Flexible dates';
+    const dates = fmtRange(t.start_date, t.end_date);
     const preview = it.slice(0, 3).map((d: any) => `<li>${esc(d.title)}</li>`).join('');
     const glyph = esc((t.destination || '?').trim().charAt(0).toUpperCase());
     const views = Number(t.views) || 0;
