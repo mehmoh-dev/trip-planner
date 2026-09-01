@@ -1,46 +1,79 @@
-# Astro Starter Kit: Basics
+# AI Trip Planner
 
-```sh
-npm create astro@latest -- --template basics
+Plan personalized trips with AI-generated itineraries, journey pricing, booking
+suggestions, and email reminders. Built with Astro (SSR), Neon Postgres, Gmail,
+and Google Gemini. Deploys to Vercel.
+
+## Features
+
+- **AI itinerary generation** — day-by-day plans from a destination, dates,
+  interests, and pace (Google Gemini, with a deterministic fallback).
+- **Journey price** — estimated per-person price returned with each itinerary
+  and stored with each published trip.
+- **Booking suggestions** — hotels, tours, transport, and passes per trip.
+- **Subscriptions** — visitors subscribe by email to hear about new trips.
+- **Notifications (Gmail)** — new trips can auto-email all subscribers, plus an
+  admin "Send to all subscribers" button.
+- **Admin panel** — login, publish trips, and manage notifications at `/admin`.
+
+Everything is dynamic: the frontend reads live data from the backend API and the
+database. Nothing about trips, prices, or subscribers is hardcoded.
+
+## Project structure
+
+```
+src/
+  lib/            # backend modules
+    env.ts        # env access (process.env at runtime, import.meta.env in dev)
+    db.ts         # Neon Postgres: schema + queries (subscribers, trips)
+    mail.ts       # Gmail (nodemailer) notifications
+    ai.ts         # Gemini itinerary generation (+ fallback)
+    auth.ts       # admin cookie session
+    http.ts       # JSON response helpers
+  pages/
+    index.astro   # Planner UI (itinerary, subscribe, trips list)
+    admin.astro   # Admin dashboard
+    api/
+      itinerary.ts     # POST — generate itinerary + price
+      subscribe.ts     # POST — add subscriber
+      trips.ts         # GET list / POST create (+ notify)
+      notify.ts        # POST — send a trip to all subscribers
+      admin/login.ts   # POST — admin login
+      admin/logout.ts  # POST — admin logout
+      admin/status.ts  # GET — live config + subscriber count
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Local development
 
-## 🚀 Project Structure
+1. `npm install`
+2. Copy `.env.example` to `.env.local` and fill in values.
+3. `npm run dev` then open http://localhost:4321
 
-Inside of your Astro project, you'll see the following folders and files:
+## Environment variables
 
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src
-│   ├── assets
-│   │   └── astro.svg
-│   ├── components
-│   │   └── Welcome.astro
-│   ├── layouts
-│   │   └── Layout.astro
-│   └── pages
-│       └── index.astro
-└── package.json
-```
+See `.env.example`. Required for full functionality:
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+| Variable | Purpose |
+| --- | --- |
+| `DATABASE_URL` | Neon Postgres pooled connection string |
+| `GMAIL_USER` / `GMAIL_APP_PASSWORD` | Gmail App Password for notifications |
+| `ADMIN_EMAIL` / `ADMIN_PASSWORD` | Admin panel login |
+| `ADMIN_SESSION_SECRET` | Signs the admin session cookie |
+| `GEMINI_API_KEY` / `GEMINI_MODEL` | Gemini itinerary generation |
+| `PUBLIC_SITE_NAME` | Site name shown in the UI/emails |
 
-## 🧞 Commands
+The app reads `process.env` first (so variables added later in the Vercel/Neon
+dashboard work without a rebuild) and falls back to `.env.local` in development.
 
-All commands are run from the root of the project, from a terminal:
+## Deploy to Vercel + Neon
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+1. Push this repo to GitHub and import it into Vercel (the `@astrojs/vercel`
+   adapter is already configured).
+2. In Vercel, add the Neon integration (Storage → Neon). It provisions the
+   database and sets `DATABASE_URL` automatically.
+3. Add the remaining environment variables under Project Settings →
+   Environment Variables.
+4. Redeploy. Database tables are created automatically on first use.
 
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+The database schema is created lazily (`CREATE TABLE IF NOT EXISTS`) the first
+time an API route touches the database — no migration step required.

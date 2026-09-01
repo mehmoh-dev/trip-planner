@@ -12,7 +12,10 @@
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^7.2.10"
+    "@astrojs/vercel": "^11.0.9",
+    "@neondatabase/serverless": "^1.1.0",
+    "astro": "^7.2.10",
+    "nodemailer": "^9.1.0"
   },
   "allowScripts": {
     "esbuild": true
