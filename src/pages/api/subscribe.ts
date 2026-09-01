@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import { addSubscriber, DbNotConfiguredError } from '../../lib/db';
+import { buildWelcomeEmail, isMailConfigured, sendOne } from '../../lib/mail';
 import { badRequest, isValidEmail, ok, readJson, serverError, serviceUnavailable } from '../../lib/http';
 
 export const prerender = false;
@@ -14,7 +15,12 @@ export const POST: APIRoute = async ({ request }) => {
 
   try {
     await addSubscriber(email);
-    return ok({ message: "You're subscribed! We'll email you when new trips are added." });
+    // Best-effort welcome email; never blocks the subscription result.
+    if (isMailConfigured()) {
+      const { subject, html, text } = buildWelcomeEmail();
+      sendOne(email, subject, html, text).catch(() => {});
+    }
+    return ok({ message: "You're subscribed! Check your inbox for a welcome note." });
   } catch (err) {
     if (err instanceof DbNotConfiguredError) return serviceUnavailable(err.message);
     console.error('subscribe error:', err);

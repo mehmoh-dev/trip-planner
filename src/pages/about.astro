@@ -1,0 +1,152 @@
+---
+import Layout from '../layouts/Layout.astro';
+const siteName = import.meta.env.PUBLIC_SITE_NAME || 'Wander';
+---
+
+<Layout title="About" description="Why we built a trip planner that respects your time." active="about">
+  <!-- Intro -->
+  <section class="about-hero">
+    <div class="wrap wrap--narrow center">
+      <p class="eyebrow">Our story</p>
+      <h1>We think planning should feel like the start of the trip.</h1>
+      <p class="about-lead">
+        {siteName} began with a familiar frustration: forty browser tabs, a half-finished
+        spreadsheet, and a nagging feeling we'd booked the wrong hotel. We wanted a simpler
+        way to go from "somewhere warm, maybe?" to a plan we felt good about.
+      </p>
+    </div>
+  </section>
+
+  <!-- Mission -->
+  <section class="section">
+    <div class="wrap">
+      <div class="split">
+        <div>
+          <p class="eyebrow">What we believe</p>
+          <h2>Good planning is thoughtful, not exhausting.</h2>
+          <p class="muted" style="margin-top:14px;">
+            A great itinerary balances the must-sees with room to wander. It respects your
+            budget and your energy. Most tools either overwhelm you with options or hand you
+            a generic list. We aim for the middle: a personal, sensible plan you can actually
+            follow, and adjust however you like.
+          </p>
+          <p class="muted" style="margin-top:12px;">
+            Everything here is built around three simple promises — make it personal, keep
+            pricing honest, and stay quietly useful with the occasional email when a trip is
+            worth your attention.
+          </p>
+          <a class="btn btn--primary" href="/#plan" style="margin-top:22px;">Plan your first trip</a>
+        </div>
+        <aside class="values">
+          <div class="value"><span class="value__k">Personal</span><span class="value__v">Plans shaped by your pace, interests and budget.</span></div>
+          <div class="value"><span class="value__k">Honest</span><span class="value__v">A realistic price up front, no hidden surprises.</span></div>
+          <div class="value"><span class="value__k">Calm</span><span class="value__v">Helpful nudges by email — never noise.</span></div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section class="section--tight section--sand">
+    <div class="wrap">
+      <div class="stats" id="about-stats">
+        <div class="stat"><b data-stat="trips">—</b><span>Curated trips</span></div>
+        <div class="stat"><b data-stat="destinations">—</b><span>Destinations</span></div>
+        <div class="stat"><b data-stat="subscribers">—</b><span>Subscribers</span></div>
+        <div class="stat"><b data-stat="views">—</b><span>Itineraries explored</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head center">
+        <p class="eyebrow">Behind the scenes</p>
+        <h2>How a plan comes together</h2>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step__num">01</div>
+          <h3>You share the shape of the trip</h3>
+          <p>Destination, dates, travelers, and the experiences you care about most.</p>
+        </div>
+        <div class="step">
+          <div class="step__num">02</div>
+          <h3>We draft a day-by-day plan</h3>
+          <p>A sensible route with activities, a realistic price, and where to book what.</p>
+        </div>
+        <div class="step">
+          <div class="step__num">03</div>
+          <h3>You make it yours</h3>
+          <p>Swap, trim, or extend anything. Subscribe to hear about new trips as they land.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact / CTA -->
+  <section class="section">
+    <div class="wrap">
+      <div class="cta">
+        <div class="cta__copy">
+          <h2>Ready when you are</h2>
+          <p>Start with a destination — the rest takes about a minute.</p>
+        </div>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+          <a class="btn btn--dark btn--lg" href="/#plan">Start planning</a>
+          <a class="btn btn--outline btn--lg" href="/#trips" style="background:transparent;color:#fff;border-color:rgba(255,255,255,.5);">See featured trips</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .about-hero { padding: 72px 0 34px; }
+  .about-hero h1 { font-size: clamp(34px, 5vw, 52px); margin-top: 6px; }
+  .about-lead { color: var(--ink-soft); font-size: 19px; margin-top: 22px; }
+  .split { display: grid; grid-template-columns: 1.3fr 0.85fr; gap: 44px; align-items: start; }
+  .split h2 { font-size: clamp(24px, 3vw, 32px); }
+  .values { display: grid; gap: 14px; }
+  .value { background: var(--surface); border: 1px solid var(--line); border-left: 3px solid var(--primary); border-radius: var(--radius-sm); padding: 18px 20px; }
+  .value__k { display: block; font-family: var(--serif); font-size: 19px; font-weight: 600; }
+  .value__v { display: block; color: var(--muted); font-size: 14.5px; margin-top: 4px; }
+
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+  .stat { text-align: center; padding: 20px 12px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
+  .stat b { display: block; font-family: var(--serif); font-size: 34px; color: var(--ink); font-weight: 600; }
+  .stat span { font-size: 13.5px; color: var(--muted); }
+
+  .cta { background: var(--primary); color: #fff; border-radius: 22px; padding: 40px; display: flex; align-items: center; justify-content: space-between; gap: 28px; flex-wrap: wrap; box-shadow: var(--shadow); }
+  .cta h2 { color: #fff; font-size: 30px; }
+  .cta p { color: #d3ece7; margin-top: 8px; }
+
+  @media (max-width: 860px) {
+    .split { grid-template-columns: 1fr; gap: 28px; }
+    .stats { grid-template-columns: 1fr 1fr; }
+    .cta { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+
+<script>
+  async function loadStats() {
+    try {
+      const res = await fetch('/api/stats');
+      const json = await res.json();
+      const s = json.stats || {};
+      document.querySelectorAll('[data-stat]').forEach((el) => {
+        const key = (el as HTMLElement).dataset.stat as string;
+        const target = Number(s[key] || 0);
+        const dur = 900, start = performance.now();
+        const step = (t: number) => {
+          const p = Math.min((t - start) / dur, 1);
+          el.textContent = String(Math.round(target * (1 - Math.pow(1 - p, 3))));
+          if (p < 1) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+      });
+    } catch { /* ignore */ }
+  }
+  loadStats();
+</script>

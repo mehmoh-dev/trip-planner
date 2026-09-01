@@ -2,253 +2,536 @@
 import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout title="Plan your trip" active="home">
-  <section class="card hero">
-    <span class="pill">AI Trip Planner</span>
-    <h1>Plan a personalized trip in seconds</h1>
-    <p class="lead">
-      Tell us where you want to go. We'll generate a day-by-day itinerary, booking
-      suggestions and an estimated journey price — then keep you posted by email.
-    </p>
-  </section>
+<Layout title="Thoughtful trips, planned in minutes" active="home">
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <div class="wrap hero__inner">
+      <div class="hero__copy">
+        <p class="eyebrow">Your itinerary, minus the spreadsheet</p>
+        <h1>Plan a trip you'll actually want to take.</h1>
+        <p class="hero__lead">
+          Tell us where you're headed and what you love. In a few seconds you'll have a
+          day-by-day plan, a realistic price, and booking tips — then a friendly email
+          whenever a new trip is worth your time.
+        </p>
+        <div class="hero__cta">
+          <a class="btn btn--primary btn--lg" href="#plan">Start planning</a>
+          <a class="btn btn--outline btn--lg" href="#trips">Browse trips</a>
+        </div>
+        <div class="hero__trust">
+          <div class="stars" aria-hidden="true">★★★★★</div>
+          <span>Loved by weekend wanderers and once-a-year adventurers alike.</span>
+        </div>
+      </div>
 
-  <!-- Planner -->
-  <section class="card">
-    <h2>Build your itinerary</h2>
-    <form id="planner-form">
-      <div class="grid grid-2">
-        <div class="field">
-          <label for="destination">Destination *</label>
-          <input id="destination" name="destination" placeholder="e.g. Kyoto, Japan" required />
+      <!-- Decorative sample itinerary card -->
+      <aside class="hero__card" aria-hidden="true">
+        <div class="ticket">
+          <div class="ticket__top">
+            <div>
+              <span class="ticket__eyebrow">Sample plan</span>
+              <h3>4 days in Lisbon</h3>
+            </div>
+            <div class="ticket__price">€960<small>/person</small></div>
+          </div>
+          <ul class="ticket__days">
+            <li><span>01</span> Alfama lanes &amp; a sunset miradouro</li>
+            <li><span>02</span> Belém pastries &amp; riverside ride</li>
+            <li><span>03</span> Day trip to Sintra palaces</li>
+            <li><span>04</span> Time Out Market &amp; farewell fado</li>
+          </ul>
+          <div class="ticket__foot">
+            <span class="tag">Food</span><span class="tag">Culture</span><span class="tag">Coast</span>
+          </div>
         </div>
-        <div class="field">
-          <label for="interests">Interests</label>
-          <input id="interests" name="interests" placeholder="food, temples, hiking" />
-        </div>
-      </div>
-      <div class="grid grid-3">
-        <div class="field">
-          <label for="startDate">Start date</label>
-          <input id="startDate" name="startDate" type="date" />
-        </div>
-        <div class="field">
-          <label for="endDate">End date</label>
-          <input id="endDate" name="endDate" type="date" />
-        </div>
-        <div class="field">
-          <label for="travelers">Travelers</label>
-          <input id="travelers" name="travelers" type="number" min="1" value="1" />
-        </div>
-      </div>
-      <div class="grid grid-3">
-        <div class="field">
-          <label for="budget">Budget per person (optional)</label>
-          <input id="budget" name="budget" type="number" min="0" placeholder="e.g. 1200" />
-        </div>
-        <div class="field">
-          <label for="currency">Currency</label>
-          <select id="currency" name="currency">
-            <option>USD</option><option>EUR</option><option>GBP</option>
-            <option>PKR</option><option>INR</option><option>AED</option><option>JPY</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="pace">Pace</label>
-          <select id="pace" name="pace">
-            <option value="relaxed">Relaxed</option>
-            <option value="balanced" selected>Balanced</option>
-            <option value="packed">Packed</option>
-          </select>
-        </div>
-      </div>
-      <button class="btn" type="submit" id="generate-btn">Generate itinerary</button>
-      <div id="planner-note" class="note hidden"></div>
-    </form>
-
-    <div id="itinerary-result" class="hidden" style="margin-top:22px;">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
-        <div>
-          <h2 id="it-title" style="margin-bottom:4px;"></h2>
-          <p id="it-summary" class="muted" style="margin:0;"></p>
-        </div>
-        <div style="text-align:right;">
-          <div class="muted" style="font-size:13px;">Estimated journey price</div>
-          <div class="price" id="it-price"></div>
-          <div class="muted" style="font-size:12px;">per person <span id="it-source"></span></div>
-        </div>
-      </div>
-      <div id="it-days"></div>
-      <div id="it-bookings"></div>
+      </aside>
     </div>
   </section>
 
-  <!-- Subscribe -->
-  <section class="card">
-    <h2>Get notified about new trips</h2>
-    <p class="lead">Subscribe and we'll email you whenever a new trip is published.</p>
-    <form id="subscribe-form" style="display:flex;gap:10px;flex-wrap:wrap;">
-      <input id="sub-email" type="email" placeholder="you@example.com" required style="flex:1;min-width:220px;" />
-      <button class="btn" type="submit" id="subscribe-btn">Subscribe</button>
-    </form>
-    <div id="subscribe-note" class="note hidden"></div>
+  <!-- ============ STATS ============ -->
+  <section class="section--tight">
+    <div class="wrap">
+      <div class="stats" id="stats">
+        <div class="stat"><b data-stat="trips">—</b><span>Curated trips</span></div>
+        <div class="stat"><b data-stat="destinations">—</b><span>Destinations</span></div>
+        <div class="stat"><b data-stat="subscribers">—</b><span>Subscribers</span></div>
+        <div class="stat"><b data-stat="views">—</b><span>Itineraries explored</span></div>
+      </div>
+    </div>
   </section>
 
-  <!-- Trips -->
-  <section class="card">
-    <div style="display:flex;align-items:center;justify-content:space-between;">
-      <h2 style="margin:0;">Upcoming trips</h2>
-      <button class="btn btn-ghost" id="refresh-trips" type="button">Refresh</button>
+  <!-- ============ PLANNER ============ -->
+  <section class="section" id="plan">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Build your itinerary</p>
+        <h2>Where would you like to go?</h2>
+        <p>Add a few details. The more you share, the more personal your plan.</p>
+      </div>
+
+      <div class="card">
+        <form id="planner-form">
+          <div class="grid grid-2">
+            <div class="field">
+              <label for="destination">Destination</label>
+              <input id="destination" name="destination" placeholder="e.g. Kyoto, Japan" required />
+            </div>
+            <div class="field">
+              <label for="interests">What are you into?</label>
+              <input id="interests" name="interests" placeholder="food, temples, slow mornings" />
+            </div>
+          </div>
+          <div class="grid grid-3">
+            <div class="field">
+              <label for="startDate">Start date</label>
+              <input id="startDate" name="startDate" type="date" />
+            </div>
+            <div class="field">
+              <label for="endDate">End date</label>
+              <input id="endDate" name="endDate" type="date" />
+            </div>
+            <div class="field">
+              <label for="travelers">Travelers</label>
+              <input id="travelers" name="travelers" type="number" min="1" value="2" />
+            </div>
+          </div>
+          <div class="grid grid-3">
+            <div class="field">
+              <label for="budget">Budget / person (optional)</label>
+              <input id="budget" name="budget" type="number" min="0" placeholder="e.g. 1200" />
+            </div>
+            <div class="field">
+              <label for="currency">Currency</label>
+              <select id="currency" name="currency">
+                <option>USD</option><option>EUR</option><option>GBP</option>
+                <option>PKR</option><option>INR</option><option>AED</option><option>JPY</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="pace">Pace</label>
+              <select id="pace" name="pace">
+                <option value="relaxed">Relaxed</option>
+                <option value="balanced" selected>Balanced</option>
+                <option value="packed">Packed</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn btn--primary btn--lg" type="submit" id="generate-btn">Generate my itinerary</button>
+          <div id="planner-note" class="note hidden"></div>
+        </form>
+
+        <div id="itinerary-result" class="result hidden">
+          <hr class="divider" />
+          <div class="result__head">
+            <div>
+              <p class="eyebrow" id="it-source"></p>
+              <h3 id="it-title"></h3>
+              <p class="muted" id="it-summary"></p>
+            </div>
+            <div class="result__price">
+              <span class="muted">Estimated price</span>
+              <div class="price" id="it-price"></div>
+              <span class="muted" style="font-size:12px;">per person</span>
+            </div>
+          </div>
+          <div class="grid grid-2" id="it-days"></div>
+          <div id="it-bookings"></div>
+        </div>
+      </div>
     </div>
-    <div id="trips-note" class="note info hidden" style="margin-top:14px;"></div>
-    <div id="trips" class="trip-list" style="margin-top:16px;"></div>
+  </section>
+
+  <!-- ============ HOW IT WORKS ============ -->
+  <section class="section section--sand">
+    <div class="wrap">
+      <div class="section-head center">
+        <p class="eyebrow">How it works</p>
+        <h2>Three steps, no overwhelm</h2>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step__num">01</div>
+          <h3>Tell us the basics</h3>
+          <p>Destination, dates, and the things that make a trip feel like yours.</p>
+        </div>
+        <div class="step">
+          <div class="step__num">02</div>
+          <h3>Get a real plan</h3>
+          <p>A day-by-day itinerary with an honest price and where to book what.</p>
+        </div>
+        <div class="step">
+          <div class="step__num">03</div>
+          <h3>Stay in the loop</h3>
+          <p>Subscribe and we'll email you when a new trip is worth a look.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FEATURED TRIPS ============ -->
+  <section class="section" id="trips">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Featured trips</p>
+        <h2>Ready-made plans to steal</h2>
+        <p>Hand-built itineraries with pricing and booking tips. Tap one to explore.</p>
+      </div>
+      <div id="trips-note" class="note info hidden"></div>
+      <div id="trips" class="trip-grid"></div>
+    </div>
+  </section>
+
+  <!-- ============ RECENTLY EXPLORED ============ -->
+  <section class="section section--sand" id="recent">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Last visited</p>
+        <h2>Recently explored</h2>
+        <p>Destinations travelers have been looking at lately.</p>
+      </div>
+      <div id="recent-list" class="recent-grid"></div>
+    </div>
+  </section>
+
+  <!-- ============ WHY US ============ -->
+  <section class="section">
+    <div class="wrap">
+      <div class="section-head center">
+        <p class="eyebrow">Why Wander</p>
+        <h2>Planning that respects your time</h2>
+      </div>
+      <div class="features">
+        <div class="feature">
+          <div class="feature__icon">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none"><path d="M12 3v18M3 12h18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </div>
+          <h3>Personal, not generic</h3>
+          <p>Every plan is shaped by your pace, interests and budget — not a template.</p>
+        </div>
+        <div class="feature">
+          <div class="feature__icon">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none"><path d="M12 2l2.4 6.9H22l-6 4.3 2.3 7-6.3-4.6L5.7 20 8 13.2 2 8.9h7.6z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+          </div>
+          <h3>Honest pricing</h3>
+          <p>A realistic per-person estimate up front, so there are no budget surprises.</p>
+        </div>
+        <div class="feature">
+          <div class="feature__icon">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none"><path d="M4 6h16v12H4z" stroke="currentColor" stroke-width="1.6"/><path d="M4 7l8 6 8-6" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          </div>
+          <h3>Nudges by email</h3>
+          <p>Subscribe once and hear about new trips the moment they're published.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TESTIMONIALS ============ -->
+  <section class="section section--sand">
+    <div class="wrap">
+      <div class="section-head center">
+        <p class="eyebrow">In their words</p>
+        <h2>Travelers who stopped overthinking</h2>
+      </div>
+      <div class="testimonials">
+        <figure class="quote">
+          <p>"I had a full Kyoto plan before my coffee went cold. The pacing was spot on for two jet-lagged parents."</p>
+          <figcaption class="who"><b>Amara O.</b><span>Family trip, 5 days</span></figcaption>
+        </figure>
+        <figure class="quote">
+          <p>"The price estimate was within a few euros of what we actually spent. That never happens."</p>
+          <figcaption class="who"><b>Daniel R.</b><span>Amalfi Coast, couple</span></figcaption>
+        </figure>
+        <figure class="quote">
+          <p>"I subscribed on a whim and booked the Iceland trip they emailed two weeks later. No regrets."</p>
+          <figcaption class="who"><b>Priya S.</b><span>Solo traveler</span></figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FAQ ============ -->
+  <section class="section" id="faq">
+    <div class="wrap wrap--narrow">
+      <div class="section-head center">
+        <p class="eyebrow">Good to know</p>
+        <h2>Questions, answered</h2>
+      </div>
+      <div class="faq">
+        <details open>
+          <summary>Is it free to plan a trip?</summary>
+          <p>Yes. Generating an itinerary and browsing featured trips is completely free.</p>
+        </details>
+        <details>
+          <summary>How accurate is the price estimate?</summary>
+          <p>It's a realistic per-person estimate covering accommodation, activities and local transport. International flights aren't included, since those vary a lot by origin.</p>
+        </details>
+        <details>
+          <summary>What do I get when I subscribe?</summary>
+          <p>A short, friendly email whenever a new trip is published — never spam, and you can ignore any that don't fit.</p>
+        </details>
+        <details>
+          <summary>Can I tweak the generated plan?</summary>
+          <p>Absolutely. Treat it as a strong first draft: adjust dates, swap activities, and use the booking tips as a starting point.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SUBSCRIBE ============ -->
+  <section class="section" id="subscribe">
+    <div class="wrap">
+      <div class="cta">
+        <div class="cta__copy">
+          <h2>Never miss a good trip</h2>
+          <p>Drop your email and we'll let you know when a new itinerary is ready.</p>
+        </div>
+        <form id="subscribe-form" class="cta__form">
+          <input id="sub-email" type="email" placeholder="you@example.com" required aria-label="Email address" />
+          <button class="btn btn--dark btn--lg" type="submit" id="subscribe-btn">Subscribe</button>
+        </form>
+      </div>
+      <div id="subscribe-note" class="note hidden" style="max-width:520px;margin-left:auto;margin-right:auto;"></div>
+    </div>
   </section>
 </Layout>
 
+<style>
+  .hero { padding: 60px 0 30px; }
+  .hero__inner { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 48px; align-items: center; }
+  .hero h1 { font-size: clamp(38px, 5.4vw, 60px); line-height: 1.03; }
+  .hero__lead { color: var(--ink-soft); font-size: 18px; margin-top: 20px; max-width: 30em; }
+  .hero__cta { display: flex; gap: 12px; margin-top: 28px; flex-wrap: wrap; }
+  .hero__trust { display: flex; align-items: center; gap: 12px; margin-top: 24px; font-size: 14px; color: var(--muted); }
+  .stars { color: var(--accent); letter-spacing: 2px; }
+
+  .hero__card { display: flex; justify-content: center; }
+  .ticket {
+    width: 100%; max-width: 380px; background: var(--surface); border: 1px solid var(--line);
+    border-radius: 20px; padding: 24px; box-shadow: var(--shadow);
+    transform: rotate(-1.4deg);
+  }
+  .ticket__top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+  .ticket__eyebrow { font-family: var(--sans); font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--primary); }
+  .ticket__top h3 { font-size: 24px; margin-top: 6px; }
+  .ticket__price { font-family: var(--serif); font-size: 26px; color: var(--accent-600); white-space: nowrap; }
+  .ticket__price small { font-family: var(--sans); font-size: 11px; color: var(--muted); }
+  .ticket__days { list-style: none; margin: 20px 0 0; padding: 18px 0; border-top: 1px dashed var(--line); border-bottom: 1px dashed var(--line); }
+  .ticket__days li { font-family: var(--sans); font-size: 14.5px; color: var(--ink-soft); display: flex; gap: 12px; padding: 6px 0; }
+  .ticket__days span { font-family: var(--serif); color: var(--primary); font-weight: 600; }
+  .ticket__foot { display: flex; gap: 8px; margin-top: 16px; }
+
+  .section--sand { background: var(--sand-2); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+  .stat { text-align: center; padding: 20px 12px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
+  .stat b { display: block; font-family: var(--serif); font-size: 34px; color: var(--ink); font-weight: 600; }
+  .stat span { font-size: 13.5px; color: var(--muted); }
+
+  .result { margin-top: 24px; }
+  .result__head { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; margin: 20px 0 22px; flex-wrap: wrap; }
+  .result__head h3 { font-size: 26px; }
+  .result__head .muted { margin-top: 6px; max-width: 46em; }
+  .result__price { text-align: right; }
+  .result__price .muted { display: block; font-size: 12px; }
+  .day-card { background: var(--sand); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 16px; }
+  .day-card h4 { font-size: 16px; margin-bottom: 8px; }
+  .day-card .dnum { font-family: var(--sans); font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); }
+  #it-bookings { margin-top: 22px; }
+  #it-bookings h4 { font-size: 17px; margin-bottom: 10px; }
+
+  .recent-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px; }
+  .recent { display: flex; align-items: center; gap: 13px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 13px 15px; text-align: left; cursor: pointer; transition: border-color .15s, transform .15s; }
+  .recent:hover { border-color: var(--primary); transform: translateY(-2px); }
+  .recent__dot { flex: none; width: 40px; height: 40px; border-radius: 11px; display: grid; place-items: center; color: #fff; font-family: var(--serif); font-weight: 600; }
+  .recent b { font-family: var(--serif); font-weight: 600; font-size: 15.5px; display: block; }
+  .recent span { font-size: 12.5px; color: var(--muted); }
+
+  .cta { background: var(--primary); color: #fff; border-radius: 22px; padding: 40px; display: flex; align-items: center; justify-content: space-between; gap: 28px; flex-wrap: wrap; box-shadow: var(--shadow); }
+  .cta h2 { color: #fff; font-size: 30px; }
+  .cta p { color: #d3ece7; margin-top: 8px; }
+  .cta__form { display: flex; gap: 10px; flex: 1; min-width: 280px; max-width: 480px; }
+  .cta__form input { border: 0; }
+
+  @media (max-width: 860px) {
+    .hero__inner { grid-template-columns: 1fr; gap: 32px; }
+    .hero__card { order: -1; }
+    .stats { grid-template-columns: 1fr 1fr; }
+    .result__head { flex-direction: column; }
+    .result__price { text-align: left; }
+    .cta { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+
 <script>
-  // ---- helpers ---------------------------------------------------------
   const $ = (id: string) => document.getElementById(id) as HTMLElement;
+  const fmt = (n: number, c: string) => {
+    try { return new Intl.NumberFormat('en-US', { style: 'currency', currency: c, maximumFractionDigits: 0 }).format(n); }
+    catch { return `${c} ${Math.round(n)}`; }
+  };
+  const esc = (s: unknown) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c] as string));
+  const showNote = (el: HTMLElement, msg: string, kind: 'ok' | 'err' | 'info' = 'info') => { el.textContent = msg; el.className = `note ${kind}`; };
+  const hide = (el: HTMLElement) => el.classList.add('hidden');
 
-  function showNote(el: HTMLElement, msg: string, kind: 'ok' | 'err' | 'info' = 'info') {
-    el.textContent = msg;
-    el.className = `note ${kind}`;
+  // Deterministic warm/teal cover gradient from a destination string.
+  function hues(seed: string) {
+    let h = 0; for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) % 360;
+    const palettes = [
+      ['#0f766e', '#0c645d'], ['#c1502c', '#d8623b'], ['#2a6f7b', '#134e5e'],
+      ['#b7791f', '#d8623b'], ['#1f5f8b', '#0f766e'], ['#7a5195', '#374c80'],
+    ];
+    return palettes[h % palettes.length];
   }
-  function hide(el: HTMLElement) { el.classList.add('hidden'); }
+  function cover(seed: string) { const [a, b] = hues(seed); return `background:linear-gradient(135deg, ${a}, ${b});`; }
 
-  function fmtPrice(amount: number, currency: string) {
-    try {
-      return new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(amount);
-    } catch { return `${currency} ${amount}`; }
+  async function api(url: string, method = 'GET', body?: any) {
+    const res = await fetch(url, { method, headers: body ? { 'Content-Type': 'application/json' } : undefined, body: body ? JSON.stringify(body) : undefined });
+    const json = await res.json().catch(() => ({}));
+    return { ok: res.ok, json };
   }
-  function esc(s: unknown) {
-    return String(s ?? '').replace(/[&<>"]/g, (c) =>
-      ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c] as string));
+  function recordVisit(v: { tripId?: number; title?: string; destination: string }) {
+    api('/api/visits', 'POST', v).then(() => loadRecent()).catch(() => {});
   }
 
-  // Keep the last generated itinerary so it can inform display.
-  let lastItinerary: any = null;
+  // ---- stats ----
+  async function loadStats() {
+    const { json } = await api('/api/stats');
+    const s = json.stats || {};
+    document.querySelectorAll('[data-stat]').forEach((el) => {
+      const key = (el as HTMLElement).dataset.stat as string;
+      animateCount(el as HTMLElement, Number(s[key] || 0));
+    });
+  }
+  function animateCount(el: HTMLElement, target: number) {
+    const dur = 900, start = performance.now();
+    const step = (t: number) => {
+      const p = Math.min((t - start) / dur, 1);
+      el.textContent = String(Math.round(target * (1 - Math.pow(1 - p, 3)))); // easeOutCubic
+      if (p < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
 
-  // ---- planner ---------------------------------------------------------
+  // ---- planner ----
   const plannerForm = $('planner-form') as HTMLFormElement;
   const genBtn = $('generate-btn') as HTMLButtonElement;
-
   plannerForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const note = $('planner-note');
     const data = Object.fromEntries(new FormData(plannerForm).entries());
-    if (!String(data.destination || '').trim()) {
-      showNote(note, 'Please enter a destination.', 'err');
-      return;
-    }
-    genBtn.disabled = true;
-    genBtn.innerHTML = '<span class="spinner"></span> Generating...';
+    if (!String(data.destination || '').trim()) { showNote(note, 'Please enter a destination.', 'err'); return; }
+    genBtn.disabled = true; genBtn.innerHTML = '<span class="spinner"></span> Planning your trip...';
     hide(note);
     try {
-      const res = await fetch('/api/itinerary', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      });
-      const json = await res.json();
-      if (!res.ok || !json.ok) throw new Error(json.error || 'Failed to generate itinerary.');
-      lastItinerary = json.itinerary;
+      const { ok, json } = await api('/api/itinerary', 'POST', data);
+      if (!ok || !json.ok) throw new Error(json.error || 'Could not generate an itinerary.');
       renderItinerary(json.itinerary);
-    } catch (err: any) {
-      showNote(note, err.message || 'Something went wrong.', 'err');
-    } finally {
-      genBtn.disabled = false;
-      genBtn.textContent = 'Generate itinerary';
-    }
+      recordVisit({ title: json.itinerary.title, destination: String(data.destination) });
+    } catch (err: any) { showNote(note, err.message, 'err'); }
+    finally { genBtn.disabled = false; genBtn.textContent = 'Generate my itinerary'; }
   });
 
   function renderItinerary(it: any) {
+    $('it-source').textContent = it.source === 'gemini' ? 'AI-generated plan' : 'Suggested plan';
     $('it-title').textContent = it.title;
     $('it-summary').textContent = it.summary;
-    $('it-price').textContent = fmtPrice(it.estimatedPrice, it.currency);
-    $('it-source').textContent = it.source === 'gemini' ? '· AI generated' : '· estimated';
-
-    const days = (it.days || []).map((d: any) => `
-      <div class="trip" style="margin-bottom:12px;">
-        <h3>Day ${esc(d.day)}: ${esc(d.title)}</h3>
-        <ul class="tight">${(d.activities || []).map((a: string) => `<li>${esc(a)}</li>`).join('')}</ul>
+    $('it-price').textContent = fmt(it.estimatedPrice, it.currency);
+    $('it-days').innerHTML = (it.days || []).map((d: any) => `
+      <div class="day-card">
+        <div class="dnum">Day ${esc(d.day)}</div>
+        <h4>${esc(d.title)}</h4>
+        <ul class="plan">${(d.activities || []).map((a: string) => `<li>${esc(a)}</li>`).join('')}</ul>
       </div>`).join('');
-    $('it-days').innerHTML = `<h3 style="margin-top:20px;">Day-by-day plan</h3>${days}`;
-
-    const bookings = (it.bookingSuggestions || []).map((b: string) => `<li>${esc(b)}</li>`).join('');
-    $('it-bookings').innerHTML = bookings
-      ? `<h3>Booking suggestions</h3><ul class="tight">${bookings}</ul>`
-      : '';
-
+    const b = (it.bookingSuggestions || []).map((x: string) => `<li>${esc(x)}</li>`).join('');
+    $('it-bookings').innerHTML = b ? `<h4>Where to book</h4><ul class="plan">${b}</ul>` : '';
     $('itinerary-result').classList.remove('hidden');
     $('itinerary-result').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
-  // ---- subscribe -------------------------------------------------------
+  // ---- subscribe ----
   const subForm = $('subscribe-form') as HTMLFormElement;
-  const subBtn = $('subscribe-btn') as HTMLButtonElement;
-
   subForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const note = $('subscribe-note');
-    const email = ($('sub-email') as HTMLInputElement).value.trim();
-    subBtn.disabled = true;
+    const btn = $('subscribe-btn') as HTMLButtonElement;
+    btn.disabled = true;
     try {
-      const res = await fetch('/api/subscribe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
-      });
-      const json = await res.json();
-      if (!res.ok || !json.ok) throw new Error(json.error || 'Could not subscribe.');
-      showNote(note, json.message, 'ok');
-      (subForm as HTMLFormElement).reset();
-    } catch (err: any) {
-      showNote(note, err.message, 'err');
-    } finally {
-      subBtn.disabled = false;
-    }
+      const { ok, json } = await api('/api/subscribe', 'POST', { email: ($('sub-email') as HTMLInputElement).value.trim() });
+      if (!ok || !json.ok) throw new Error(json.error || 'Could not subscribe.');
+      showNote(note, json.message, 'ok'); subForm.reset(); loadStats();
+    } catch (err: any) { showNote(note, err.message, 'err'); }
+    finally { btn.disabled = false; }
   });
 
-  // ---- trips list ------------------------------------------------------
+  // ---- featured trips ----
   async function loadTrips() {
-    const note = $('trips-note');
-    const list = $('trips');
-    list.innerHTML = '<p class="muted">Loading trips...</p>';
-    hide(note);
+    const note = $('trips-note'); const list = $('trips');
+    list.innerHTML = '<p class="muted">Loading trips…</p>';
     try {
-      const res = await fetch('/api/trips');
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error || 'Could not load trips.');
+      const { json } = await api('/api/trips');
       const trips = json.trips || [];
-      if (json.dbConfigured === false) {
-        showNote(note, 'Trips will appear here once the Neon database is connected.', 'info');
-      }
-      if (!trips.length) {
-        list.innerHTML = '<p class="muted">No trips published yet. Check back soon!</p>';
-        return;
-      }
-      list.innerHTML = trips.map(renderTripCard).join('');
-    } catch (err: any) {
-      list.innerHTML = '';
-      showNote(note, err.message, 'err');
-    }
+      if (json.dbConfigured === false) showNote(note, 'Trips will appear once the database is connected.', 'info');
+      if (!trips.length) { list.innerHTML = '<p class="muted">No trips published yet — check back soon.</p>'; return; }
+      list.innerHTML = trips.map(tripCard).join('');
+      list.querySelectorAll('[data-trip]').forEach((el) => el.addEventListener('click', () => {
+        const t = JSON.parse((el as HTMLElement).dataset.trip as string);
+        recordVisit({ tripId: t.id, title: t.title, destination: t.destination });
+        openTrip(t);
+      }));
+    } catch { list.innerHTML = '<p class="muted">Could not load trips.</p>'; }
   }
-
-  function renderTripCard(t: any) {
+  function tripCard(t: any) {
     const dates = t.start_date && t.end_date ? `${t.start_date} → ${t.end_date}` : 'Flexible dates';
-    const price = fmtPrice(Number(t.price) || 0, t.currency || 'USD');
-    const itinerary = Array.isArray(t.itinerary) ? t.itinerary : [];
-    const preview = itinerary.slice(0, 3)
-      .map((d: any) => `<li>Day ${esc(d.day)}: ${esc(d.title)}</li>`).join('');
+    const it = Array.isArray(t.itinerary) ? t.itinerary : [];
+    const preview = it.slice(0, 3).map((d: any) => `<li>${esc(d.title)}</li>`).join('');
     return `
-      <div class="trip">
-        <h3>${esc(t.title)}</h3>
-        <p class="dest">📍 ${esc(t.destination)} · ${esc(dates)} · ${esc(t.travelers)} traveler(s)</p>
-        <div class="price">${price}<span class="muted" style="font-size:12px;font-weight:500;"> / person</span></div>
-        ${t.summary ? `<p class="muted" style="font-size:14px;margin-top:8px;">${esc(t.summary)}</p>` : ''}
-        ${preview ? `<ul class="tight" style="font-size:14px;">${preview}${itinerary.length > 3 ? '<li class="muted">…</li>' : ''}</ul>` : ''}
-      </div>`;
+      <article class="trip" data-trip='${esc(JSON.stringify(t))}'>
+        <div class="trip__cover" style="${cover(t.destination)}"><span class="tag">${esc((t.currency||'USD'))} · ${it.length || '—'} days</span></div>
+        <div class="trip__body">
+          <h3>${esc(t.title)}</h3>
+          <span class="trip__dest">◍ ${esc(t.destination)}</span>
+          <span class="muted" style="font-size:13px;">${esc(dates)}</span>
+          <ul class="plan">${preview}</ul>
+          <div class="trip__foot">
+            <span class="price">${fmt(Number(t.price)||0, t.currency||'USD')}<small> /person</small></span>
+            <span class="btn btn--ghost">View plan →</span>
+          </div>
+        </div>
+      </article>`;
+  }
+  function openTrip(t: any) {
+    // Reuse the planner result panel to show the saved trip's details.
+    renderItinerary({
+      source: 'saved', title: t.title, summary: t.summary || `${t.destination} itinerary`,
+      estimatedPrice: Number(t.price) || 0, currency: t.currency || 'USD',
+      days: Array.isArray(t.itinerary) ? t.itinerary : [],
+      bookingSuggestions: Array.isArray(t.booking_suggestions) ? t.booking_suggestions : [],
+    });
+    ($('destination') as HTMLInputElement).value = t.destination;
+    document.getElementById('plan')?.scrollIntoView({ behavior: 'smooth' });
   }
 
-  $('refresh-trips').addEventListener('click', loadTrips);
-  loadTrips();
+  // ---- recently explored ----
+  async function loadRecent() {
+    const list = $('recent-list');
+    const { json } = await api('/api/visits?limit=8');
+    const views = json.views || [];
+    if (!views.length) { list.innerHTML = '<p class="muted">No recent activity yet — generate an itinerary to get started.</p>'; return; }
+    list.innerHTML = views.map((v: any) => {
+      const [a] = hues(v.destination);
+      const initial = esc((v.destination || '?').trim().charAt(0).toUpperCase());
+      return `
+        <button class="recent" data-dest="${esc(v.destination)}">
+          <span class="recent__dot" style="background:${a}">${initial}</span>
+          <span><b>${esc(v.title || v.destination)}</b><span>◍ ${esc(v.destination)}</span></span>
+        </button>`;
+    }).join('');
+    list.querySelectorAll('.recent').forEach((el) => el.addEventListener('click', () => {
+      ($('destination') as HTMLInputElement).value = (el as HTMLElement).dataset.dest || '';
+      document.getElementById('plan')?.scrollIntoView({ behavior: 'smooth' });
+      ($('destination') as HTMLInputElement).focus();
+    }));
+  }
+
+  loadStats(); loadTrips(); loadRecent();
 </script>

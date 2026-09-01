@@ -2,144 +2,135 @@
 import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout title="Admin" active="admin">
-  <!-- Login -->
-  <section class="card" id="login-card">
-    <h1>Admin login</h1>
-    <p class="lead">Sign in to publish trips and notify subscribers.</p>
-    <form id="login-form" style="max-width:420px;">
-      <div class="field">
-        <label for="admin-email">Email</label>
-        <input id="admin-email" type="email" autocomplete="username" required />
+<Layout title="Admin" description="Publish trips and notify subscribers." active="admin">
+  <section class="section">
+    <div class="wrap">
+      <!-- Login -->
+      <div id="login-card" class="wrap--narrow" style="margin:0 auto;">
+        <div class="section-head center">
+          <p class="eyebrow">Admin</p>
+          <h2>Sign in to your dashboard</h2>
+          <p>Publish trips, load sample data, and notify subscribers.</p>
+        </div>
+        <div class="card">
+          <form id="login-form">
+            <div class="field">
+              <label for="admin-email">Email</label>
+              <input id="admin-email" type="email" autocomplete="username" required />
+            </div>
+            <div class="field">
+              <label for="admin-password">Password</label>
+              <input id="admin-password" type="password" autocomplete="current-password" required />
+            </div>
+            <button class="btn btn--primary btn--block btn--lg" type="submit" id="login-btn">Sign in</button>
+            <div id="login-note" class="note hidden"></div>
+          </form>
+        </div>
       </div>
-      <div class="field">
-        <label for="admin-password">Password</label>
-        <input id="admin-password" type="password" autocomplete="current-password" required />
+
+      <!-- Dashboard -->
+      <div id="dashboard" class="hidden">
+        <!-- header row -->
+        <div class="dash-head">
+          <div>
+            <p class="eyebrow">Dashboard</p>
+            <h2>Manage trips</h2>
+          </div>
+          <button class="btn btn--outline" id="logout-btn" type="button">Log out</button>
+        </div>
+
+        <div class="dash-grid">
+          <div class="panel stat-card">
+            <span class="muted">Subscribers</span>
+            <b id="sub-count">—</b>
+          </div>
+          <div class="panel" style="flex:1;">
+            <span class="muted" style="font-size:13px;">System status</span>
+            <div id="status-badges" class="badges"></div>
+          </div>
+        </div>
+
+        <!-- Publish trip -->
+        <div class="card" style="margin-top:22px;">
+          <h3 style="font-size:22px;margin-bottom:6px;">Publish a new trip</h3>
+          <p class="muted" style="margin-bottom:20px;">Fill it in yourself, or let AI draft the itinerary and price from a destination.</p>
+          <form id="trip-form">
+            <div class="grid grid-2">
+              <div class="field"><label for="t-title">Trip title</label><input id="t-title" placeholder="Autumn in Kyoto" required /></div>
+              <div class="field"><label for="t-destination">Destination</label><input id="t-destination" placeholder="Kyoto, Japan" required /></div>
+            </div>
+            <div class="grid grid-3">
+              <div class="field"><label for="t-start">Start date</label><input id="t-start" type="date" /></div>
+              <div class="field"><label for="t-end">End date</label><input id="t-end" type="date" /></div>
+              <div class="field"><label for="t-travelers">Travelers</label><input id="t-travelers" type="number" min="1" value="2" /></div>
+            </div>
+            <div class="grid grid-3">
+              <div class="field"><label for="t-price">Journey price / person</label><input id="t-price" type="number" min="0" step="0.01" placeholder="1200" required /></div>
+              <div class="field"><label for="t-currency">Currency</label>
+                <select id="t-currency"><option>USD</option><option>EUR</option><option>GBP</option><option>PKR</option><option>INR</option><option>AED</option><option>JPY</option></select>
+              </div>
+              <div class="field"><label for="t-interests">Interests (for AI)</label><input id="t-interests" placeholder="temples, food" /></div>
+            </div>
+            <div class="field"><label for="t-summary">Summary</label><textarea id="t-summary" placeholder="Short description, or generate with AI below."></textarea></div>
+
+            <div class="row">
+              <button class="btn btn--teal" type="button" id="ai-btn">Generate with AI</button>
+              <label class="check"><input type="checkbox" id="t-notify" checked /> Email subscribers on publish</label>
+            </div>
+            <div id="ai-preview" class="note info hidden"></div>
+
+            <button class="btn btn--primary btn--lg" type="submit" id="publish-btn" style="margin-top:18px;">Publish trip</button>
+            <div id="trip-note" class="note hidden"></div>
+          </form>
+        </div>
+
+        <!-- Manage / notify -->
+        <div class="card" style="margin-top:22px;">
+          <div class="dash-head" style="margin-bottom:8px;">
+            <h3 style="font-size:22px;">Published trips</h3>
+            <div class="row" style="margin:0;">
+              <button class="btn btn--outline" id="seed-btn" type="button">Load sample data</button>
+              <button class="btn btn--dark" id="notify-all-btn" type="button">Send latest to all</button>
+            </div>
+          </div>
+          <div id="admin-note" class="note hidden"></div>
+          <div id="admin-trips" class="trip-grid" style="margin-top:16px;"></div>
+        </div>
       </div>
-      <button class="btn" type="submit" id="login-btn">Sign in</button>
-      <div id="login-note" class="note hidden"></div>
-    </form>
+    </div>
   </section>
-
-  <!-- Dashboard -->
-  <div id="dashboard" class="hidden">
-    <section class="card">
-      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
-        <div>
-          <h1 style="margin:0;">Dashboard</h1>
-          <p class="muted" style="margin:4px 0 0;">Subscribers: <strong id="sub-count">–</strong></p>
-        </div>
-        <button class="btn btn-ghost" id="logout-btn" type="button">Log out</button>
-      </div>
-      <div id="status-badges" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;"></div>
-    </section>
-
-    <!-- Add trip -->
-    <section class="card">
-      <h2>Publish a new trip</h2>
-      <form id="trip-form">
-        <div class="grid grid-2">
-          <div class="field">
-            <label for="t-title">Trip title *</label>
-            <input id="t-title" placeholder="Autumn in Kyoto" required />
-          </div>
-          <div class="field">
-            <label for="t-destination">Destination *</label>
-            <input id="t-destination" placeholder="Kyoto, Japan" required />
-          </div>
-        </div>
-        <div class="grid grid-3">
-          <div class="field">
-            <label for="t-start">Start date</label>
-            <input id="t-start" type="date" />
-          </div>
-          <div class="field">
-            <label for="t-end">End date</label>
-            <input id="t-end" type="date" />
-          </div>
-          <div class="field">
-            <label for="t-travelers">Travelers</label>
-            <input id="t-travelers" type="number" min="1" value="1" />
-          </div>
-        </div>
-        <div class="grid grid-3">
-          <div class="field">
-            <label for="t-price">Journey price (per person) *</label>
-            <input id="t-price" type="number" min="0" step="0.01" placeholder="1200" required />
-          </div>
-          <div class="field">
-            <label for="t-currency">Currency</label>
-            <select id="t-currency">
-              <option>USD</option><option>EUR</option><option>GBP</option>
-              <option>PKR</option><option>INR</option><option>AED</option><option>JPY</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="t-interests">Interests (for AI)</label>
-            <input id="t-interests" placeholder="temples, food" />
-          </div>
-        </div>
-        <div class="field">
-          <label for="t-summary">Summary</label>
-          <textarea id="t-summary" placeholder="Short description (or generate with AI below)"></textarea>
-        </div>
-
-        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
-          <button class="btn btn-ghost" type="button" id="ai-btn">✨ Generate itinerary &amp; price with AI</button>
-          <label style="display:flex;align-items:center;gap:6px;font-weight:600;margin:0;">
-            <input type="checkbox" id="t-notify" checked style="width:auto;" />
-            Email subscribers on publish
-          </label>
-        </div>
-        <div id="ai-preview" class="note info hidden" style="margin-top:12px;"></div>
-
-        <div style="margin-top:16px;">
-          <button class="btn" type="submit" id="publish-btn">Publish trip</button>
-        </div>
-        <div id="trip-note" class="note hidden"></div>
-      </form>
-    </section>
-
-    <!-- Manage / notify -->
-    <section class="card">
-      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
-        <h2 style="margin:0;">Published trips</h2>
-        <button class="btn btn-secondary" id="notify-all-btn" type="button">📣 Send latest to all subscribers</button>
-      </div>
-      <div id="admin-note" class="note hidden" style="margin-top:14px;"></div>
-      <div id="admin-trips" class="trip-list" style="margin-top:16px;"></div>
-    </section>
-  </div>
 </Layout>
+
+<style>
+  .dash-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
+  .dash-grid { display: flex; gap: 16px; flex-wrap: wrap; }
+  .stat-card { min-width: 180px; }
+  .stat-card b { display: block; font-family: var(--serif); font-size: 38px; font-weight: 600; margin-top: 4px; }
+  .badges { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+  .badge { display: inline-flex; align-items: center; gap: 6px; font-family: var(--sans); font-size: 12.5px; font-weight: 600; padding: 5px 11px; border-radius: 999px; border: 1px solid transparent; }
+  .badge.on { background: var(--ok-bg); color: var(--ok); border-color: #bfe6cf; }
+  .badge.off { background: var(--err-bg); color: var(--err); border-color: #f2c9c5; }
+  .row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 6px; }
+  .check { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; font-size: 14px; color: var(--ink-soft); margin: 0; }
+  .check input { width: auto; }
+  .admin-trip { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow-sm); }
+  .admin-trip h4 { font-size: 19px; }
+</style>
 
 <script>
   const $ = (id: string) => document.getElementById(id) as HTMLElement;
-  function showNote(el: HTMLElement, msg: string, kind: 'ok' | 'err' | 'info' = 'info') {
-    el.textContent = msg; el.className = `note ${kind}`;
-  }
-  function hide(el: HTMLElement) { el.classList.add('hidden'); }
-  function esc(s: unknown) {
-    return String(s ?? '').replace(/[&<>"]/g, (c) =>
-      ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c] as string));
-  }
-  function fmtPrice(amount: number, currency: string) {
-    try { return new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(amount); }
-    catch { return `${currency} ${amount}`; }
-  }
+  const showNote = (el: HTMLElement, msg: string, kind: 'ok' | 'err' | 'info' = 'info') => { el.textContent = msg; el.className = `note ${kind}`; };
+  const hide = (el: HTMLElement) => el.classList.add('hidden');
+  const esc = (s: unknown) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c] as string));
+  const fmt = (n: number, c: string) => { try { return new Intl.NumberFormat('en-US', { style: 'currency', currency: c, maximumFractionDigits: 0 }).format(n); } catch { return `${c} ${Math.round(n)}`; } };
   async function api(url: string, method = 'GET', body?: any) {
-    const res = await fetch(url, {
-      method,
-      headers: body ? { 'Content-Type': 'application/json' } : undefined,
-      body: body ? JSON.stringify(body) : undefined,
-    });
+    const res = await fetch(url, { method, headers: body ? { 'Content-Type': 'application/json' } : undefined, body: body ? JSON.stringify(body) : undefined });
     const json = await res.json().catch(() => ({}));
-    return { ok: res.ok, status: res.status, json };
+    return { ok: res.ok, json };
   }
 
-  // Holds AI-generated itinerary for the trip being published.
   let generated: { days: any[]; bookingSuggestions: string[] } | null = null;
 
-  // ---- session / status ----------------------------------------------
   async function refreshStatus() {
     const { json } = await api('/api/admin/status');
     if (json.authenticated) {
@@ -153,140 +144,92 @@ import Layout from '../layouts/Layout.astro';
       $('login-card').classList.remove('hidden');
     }
   }
-
   function renderBadges(cfg: any) {
-    const items = [
-      ['Database', cfg.dbConfigured],
-      ['Email', cfg.mailConfigured],
-      ['AI', cfg.aiConfigured],
-      ['Admin', cfg.adminConfigured],
-    ];
-    $('status-badges').innerHTML = items.map(([label, ready]) => {
-      const color = ready ? 'background:#ecfdf5;color:#065f46;border:1px solid #a7f3d0;'
-                          : 'background:#fef2f2;color:#991b1b;border:1px solid #fecaca;';
-      return `<span class="pill" style="${color}">${ready ? '✓' : '✗'} ${label}</span>`;
-    }).join('');
+    const items: [string, boolean][] = [['Database', cfg.dbConfigured], ['Email', cfg.mailConfigured], ['AI', cfg.aiConfigured], ['Admin', cfg.adminConfigured]];
+    $('status-badges').innerHTML = items.map(([label, ready]) =>
+      `<span class="badge ${ready ? 'on' : 'off'}">${ready ? '●' : '○'} ${label}</span>`).join('');
   }
 
-  // ---- login / logout -------------------------------------------------
   ($('login-form') as HTMLFormElement).addEventListener('submit', async (e) => {
     e.preventDefault();
-    const btn = $('login-btn') as HTMLButtonElement;
-    const note = $('login-note');
+    const btn = $('login-btn') as HTMLButtonElement; const note = $('login-note');
     btn.disabled = true;
-    const { ok, json } = await api('/api/admin/login', 'POST', {
-      email: ($('admin-email') as HTMLInputElement).value,
-      password: ($('admin-password') as HTMLInputElement).value,
-    });
+    const { ok, json } = await api('/api/admin/login', 'POST', { email: ($('admin-email') as HTMLInputElement).value, password: ($('admin-password') as HTMLInputElement).value });
     btn.disabled = false;
     if (!ok || !json.ok) { showNote(note, json.error || 'Login failed.', 'err'); return; }
-    hide(note);
-    refreshStatus();
+    hide(note); refreshStatus();
   });
+  $('logout-btn').addEventListener('click', async () => { await api('/api/admin/logout', 'POST', {}); refreshStatus(); });
 
-  $('logout-btn').addEventListener('click', async () => {
-    await api('/api/admin/logout', 'POST', {});
-    refreshStatus();
-  });
-
-  // ---- AI generation --------------------------------------------------
   $('ai-btn').addEventListener('click', async () => {
-    const btn = $('ai-btn') as HTMLButtonElement;
-    const preview = $('ai-preview');
+    const btn = $('ai-btn') as HTMLButtonElement; const preview = $('ai-preview');
     const destination = ($('t-destination') as HTMLInputElement).value.trim();
     if (!destination) { showNote(preview, 'Enter a destination first.', 'err'); return; }
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner"></span> Generating...';
+    btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Generating…';
     const { ok, json } = await api('/api/itinerary', 'POST', {
-      destination,
-      startDate: ($('t-start') as HTMLInputElement).value || null,
-      endDate: ($('t-end') as HTMLInputElement).value || null,
-      travelers: ($('t-travelers') as HTMLInputElement).value,
-      currency: ($('t-currency') as HTMLSelectElement).value,
-      interests: ($('t-interests') as HTMLInputElement).value,
+      destination, startDate: ($('t-start') as HTMLInputElement).value || null, endDate: ($('t-end') as HTMLInputElement).value || null,
+      travelers: ($('t-travelers') as HTMLInputElement).value, currency: ($('t-currency') as HTMLSelectElement).value, interests: ($('t-interests') as HTMLInputElement).value,
     });
-    btn.disabled = false;
-    btn.innerHTML = '✨ Generate itinerary &amp; price with AI';
+    btn.disabled = false; btn.textContent = 'Generate with AI';
     if (!ok || !json.ok) { showNote(preview, json.error || 'Generation failed.', 'err'); return; }
-
     const it = json.itinerary;
     generated = { days: it.days, bookingSuggestions: it.bookingSuggestions };
     if (!($('t-title') as HTMLInputElement).value) ($('t-title') as HTMLInputElement).value = it.title;
     if (!($('t-summary') as HTMLTextAreaElement).value) ($('t-summary') as HTMLTextAreaElement).value = it.summary;
     if (!($('t-price') as HTMLInputElement).value) ($('t-price') as HTMLInputElement).value = String(it.estimatedPrice);
-
-    showNote(preview,
-      `Generated ${it.days.length} day(s), ${it.bookingSuggestions.length} booking suggestion(s). ` +
-      `Suggested price: ${fmtPrice(it.estimatedPrice, it.currency)} (${it.source === 'gemini' ? 'AI' : 'estimated'}). ` +
-      `Fields were prefilled — edit as needed, then Publish.`, 'ok');
+    showNote(preview, `Drafted ${it.days.length} days and ${it.bookingSuggestions.length} booking tips. Suggested price ${fmt(it.estimatedPrice, it.currency)} (${it.source === 'gemini' ? 'AI' : 'estimate'}). Edit anything, then publish.`, 'ok');
   });
 
-  // ---- publish trip ---------------------------------------------------
   ($('trip-form') as HTMLFormElement).addEventListener('submit', async (e) => {
     e.preventDefault();
-    const btn = $('publish-btn') as HTMLButtonElement;
-    const note = $('trip-note');
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner"></span> Publishing...';
+    const btn = $('publish-btn') as HTMLButtonElement; const note = $('trip-note');
+    btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Publishing…';
     const payload = {
-      title: ($('t-title') as HTMLInputElement).value,
-      destination: ($('t-destination') as HTMLInputElement).value,
-      startDate: ($('t-start') as HTMLInputElement).value || null,
-      endDate: ($('t-end') as HTMLInputElement).value || null,
-      travelers: ($('t-travelers') as HTMLInputElement).value,
-      price: ($('t-price') as HTMLInputElement).value,
-      currency: ($('t-currency') as HTMLSelectElement).value,
-      summary: ($('t-summary') as HTMLTextAreaElement).value,
-      itinerary: generated?.days || [],
-      bookingSuggestions: generated?.bookingSuggestions || [],
+      title: ($('t-title') as HTMLInputElement).value, destination: ($('t-destination') as HTMLInputElement).value,
+      startDate: ($('t-start') as HTMLInputElement).value || null, endDate: ($('t-end') as HTMLInputElement).value || null,
+      travelers: ($('t-travelers') as HTMLInputElement).value, price: ($('t-price') as HTMLInputElement).value, currency: ($('t-currency') as HTMLSelectElement).value,
+      summary: ($('t-summary') as HTMLTextAreaElement).value, itinerary: generated?.days || [], bookingSuggestions: generated?.bookingSuggestions || [],
       notify: ($('t-notify') as HTMLInputElement).checked,
     };
     const { ok, json } = await api('/api/trips', 'POST', payload);
-    btn.disabled = false;
-    btn.textContent = 'Publish trip';
+    btn.disabled = false; btn.textContent = 'Publish trip';
     if (!ok || !json.ok) { showNote(note, json.error || 'Could not publish.', 'err'); return; }
-
     let msg = 'Trip published.';
-    if (payload.notify) {
-      if (json.notifyError) msg += ` ${json.notifyError}`;
-      else msg += ` Emailed ${json.notified?.sent ?? 0} of ${json.notified?.total ?? 0} subscriber(s).`;
-    }
+    if (payload.notify) msg += json.notifyError ? ` ${json.notifyError}` : ` Emailed ${json.notified?.sent ?? 0} of ${json.notified?.total ?? 0} subscriber(s).`;
     showNote(note, msg, json.notifyError ? 'info' : 'ok');
-    (e.target as HTMLFormElement).reset();
-    generated = null;
-    hide($('ai-preview'));
-    loadAdminTrips();
-    refreshStatus();
+    (e.target as HTMLFormElement).reset(); generated = null; hide($('ai-preview')); loadAdminTrips(); refreshStatus();
   });
 
-  // ---- trips + notify all ---------------------------------------------
   async function loadAdminTrips() {
-    const list = $('admin-trips');
-    list.innerHTML = '<p class="muted">Loading...</p>';
+    const list = $('admin-trips'); list.innerHTML = '<p class="muted">Loading…</p>';
     const { json } = await api('/api/trips');
     const trips = json.trips || [];
-    if (!trips.length) { list.innerHTML = '<p class="muted">No trips yet.</p>'; return; }
+    if (!trips.length) { list.innerHTML = '<p class="muted">No trips yet. Use “Load sample data” to get started.</p>'; return; }
     list.innerHTML = trips.map((t: any) => `
-      <div class="trip">
-        <h3>${esc(t.title)}</h3>
-        <p class="dest">📍 ${esc(t.destination)}</p>
-        <div class="price">${fmtPrice(Number(t.price) || 0, t.currency || 'USD')}<span class="muted" style="font-size:12px;font-weight:500;"> / person</span></div>
-        <button class="btn btn-ghost notify-one" data-id="${t.id}" style="margin-top:12px;font-size:14px;padding:8px 12px;">Send this to subscribers</button>
+      <div class="admin-trip">
+        <h4>${esc(t.title)}</h4>
+        <p class="muted" style="font-size:13.5px;margin:4px 0 10px;">◍ ${esc(t.destination)}</p>
+        <span class="price">${fmt(Number(t.price) || 0, t.currency || 'USD')}<small> /person</small></span>
+        <button class="btn btn--outline btn--block notify-one" data-id="${t.id}" style="margin-top:14px;">Send this to subscribers</button>
       </div>`).join('');
-    list.querySelectorAll('.notify-one').forEach((b) =>
-      b.addEventListener('click', () => sendNotify((b as HTMLElement).dataset.id)));
+    list.querySelectorAll('.notify-one').forEach((b) => b.addEventListener('click', () => sendNotify((b as HTMLElement).dataset.id)));
   }
 
   async function sendNotify(tripId?: string) {
-    const note = $('admin-note');
-    showNote(note, 'Sending...', 'info');
+    const note = $('admin-note'); showNote(note, 'Sending…', 'info');
     const { ok, json } = await api('/api/notify', 'POST', tripId ? { tripId } : {});
-    if (!ok || !json.ok) { showNote(note, json.error || 'Send failed.', 'err'); return; }
-    showNote(note, json.message || 'Sent.', 'ok');
+    showNote(note, (!ok || !json.ok) ? (json.error || 'Send failed.') : (json.message || 'Sent.'), (!ok || !json.ok) ? 'err' : 'ok');
   }
-
   $('notify-all-btn').addEventListener('click', () => sendNotify());
 
-  // init
+  $('seed-btn').addEventListener('click', async () => {
+    const note = $('admin-note'); const btn = $('seed-btn') as HTMLButtonElement;
+    btn.disabled = true; showNote(note, 'Loading sample data…', 'info');
+    const { ok, json } = await api('/api/seed', 'POST', {});
+    btn.disabled = false;
+    showNote(note, (!ok || !json.ok) ? (json.error || 'Seeding failed.') : json.message, (!ok || !json.ok) ? 'err' : 'ok');
+    loadAdminTrips(); refreshStatus();
+  });
+
   refreshStatus();
 </script>
